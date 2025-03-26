@@ -1,20 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Container from "../Container";
 
 export default function CountDownTimer() {
-    const [countDown, setCountDown] = useState<number>(0);
-    const [isStart, setIsStart] = useState(false);
+    const [countDown, setCountDown] = useState<number>(1);
+    const [isStart, setIsStart] = useState(false); // 可以判斷是否開始
+    const intervalRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (isStart && countDown > 0) {
-            const interval = setInterval(() => {
-                setCountDown((prev) => prev - 1);
-                console.log(countDown);
+            intervalRef.current = setInterval(() => {
+                setCountDown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(intervalRef.current!);
+                        setIsStart(false); // 自動停止
+                        return 0;
+                    }
+                    return prev - 1;
+                });
             }, 1000);
 
-            return () => clearInterval(interval);
+            return () => {
+                if (intervalRef.current) {
+                    console.log("我清除啦");
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
+            };
+        } else {
+            setIsStart(false);
         }
-    }, [isStart, countDown]);
+    }, [isStart]);
 
     return (
         <Container>
@@ -26,13 +41,17 @@ export default function CountDownTimer() {
                     setCountDown(Number(e.target.value));
                     setIsStart(false);
                 }}
+                value={countDown}
+                min={1}
             />
-            <span>{countDown === 0 && isStart ? "時間到!" : countDown}</span>
-            <button
-                onClick={() => setIsStart(true)}
-                disabled={countDown === 0 && isStart}
-            >
-                開始
+            <span style={{ margin: "0 10px" }}>
+                {countDown === 0 ? "時間到!" : countDown}
+            </span>
+            <button onClick={() => setIsStart(true)} disabled={isStart}>
+                {isStart && countDown != 0 ? "倒數中.." : "開始"}
+            </button>
+            <button onClick={() => setIsStart(false)} disabled={!isStart}>
+                暫停
             </button>
         </Container>
     );

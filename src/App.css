@@ -36,3 +36,28 @@ body {
     font-size: 2rem;
     cursor: pointer;
 }
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* 保持比例剪裁 */
+    border-radius: 8px;
+}
+
+.image-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.modal {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
